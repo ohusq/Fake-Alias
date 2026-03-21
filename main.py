@@ -3,12 +3,12 @@ from random import randint
 from datetime import date
 import random
 import json
+import requests
 
 VALID_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 names_df = pd.read_csv('namen.csv')
 
-# Read raw lines and only keep rows with exactly 2 comma-separated fields
 with open('places_provinces.csv', encoding='utf-8') as f:
     lines = f.readlines()
 
@@ -19,7 +19,6 @@ for line in lines[1:]:
     if len(parts) == 2:
         rows.append(parts)
     elif len(parts) == 3:
-        # e.g. "Nes,Ameland,Fryslân" → "Nes (Ameland),Fryslân"
         rows.append([f"{parts[0]} ({parts[1]})", parts[2]])
 
 places_provinces_df = pd.DataFrame(rows, columns=header)
@@ -51,7 +50,34 @@ def random_date(start_year=1900, end_year=None):
     return f"{day}-{month}-{year}"
 
 
-def random_nl_postcode() -> str:
+def lookup_postcode_for_city(city: str) -> str | None:
+    try:
+        url = "https://gratis-postcodedata.nl/api/suggest"
+        response = requests.get(url, params={"q": city, "country": "nl", "limit": 10}, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+
+        results = [
+            r for r in data.get("results", [])
+            if r.get("plaats", "").lower() == city.lower()
+        ]
+
+        if not results:
+            results = data.get("results", [])
+
+        if results:
+            chosen = random.choice(results)
+            raw = chosen["postcode"]
+            return f"{raw[:4]} {raw[4:]}"
+
+    except Exception:
+        pass
+
+    return None
+
+
+def random_nl_postcode_fallback() -> str:
+    """Fallback: fully random NL postcode when API is unavailable."""
     number = random.randint(1000, 9999)
     letters = ''.join(random.choice(VALID_LETTERS) for _ in range(2))
     return f"{number:04d} {letters}"
@@ -75,9 +101,11 @@ def generate_person() -> dict:
     last_name  = LAST_NAMES[randint(0, LAST_NAMES_LENGTH - 1)]
     name       = f"{first_name} {last_name}"
     dob        = date_of_birth_gen()
-    zip_code   = random_nl_postcode()
-    house_number = str(randint(1, 200))
     place, province = random_place_province()
+
+    zip_code = lookup_postcode_for_city(place) or random_nl_postcode_fallback()
+
+    house_number = str(randint(1, 200))
 
     eye_color = random_color(['Blauw', 'Bruin', 'Groen', 'Hazel'])
     fav_color = random_color([
@@ -145,9 +173,11 @@ def save_txt(p: dict, filename: str = "results/alias.txt"):
         f.write(f"    Provincie:       {p['provincie']}\n\n")
         f.write("=================================================\n")
 
+
 def save_json(p: dict, filename: str = "results/alias.json"):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(p, f, ensure_ascii=False, indent=4)
+
 
 def main():
     person = generate_person()
