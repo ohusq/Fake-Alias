@@ -126,7 +126,7 @@ def print_person(p: dict):
     """)
 
 
-def save_txt(p: dict, filename: str = "alias.txt"):
+def save_txt(p: dict, filename: str = "results/alias.txt"):
     with open(filename, 'w', encoding='utf-8') as f:
         f.write("=================================================\n")
         f.write("            Neppe Alias Generator\n")
@@ -145,7 +145,7 @@ def save_txt(p: dict, filename: str = "alias.txt"):
         f.write(f"    Provincie:       {p['provincie']}\n\n")
         f.write("=================================================\n")
 
-def save_json(p: dict, filename: str = "alias.json"):
+def save_json(p: dict, filename: str = "results/alias.json"):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(p, f, ensure_ascii=False, indent=4)
 
