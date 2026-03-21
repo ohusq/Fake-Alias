@@ -33,11 +33,6 @@ pip install pandas
 
 ## Gebruik
 
-Zorg dat de volgende bestanden in dezelfde map staan als `main.py`:
-
-- `namen.csv` met kolommen `voornaam` en `achternaam`
-- `places_provinces.csv` met kolommen `plaatsnaam` en `provincie`
-
 Start het script met:
 
 ```bash
@@ -73,7 +68,7 @@ python main.py
 
 ---
 
-## Uitvoerbestanden
+## Resultaten
 
 | Bestand | Inhoud |
 |---|---|
@@ -89,8 +84,9 @@ Fake Alias/
 ├── main.py
 ├── namen.csv
 ├── places_provinces.csv
-├── alias.txt        # gegenereerd
-└── alias.json       # gegenereerd
+├── results/
+├──── alias.txt        # gegenereerd
+└──── alias.json       # gegenereerd
 ```
 
 ---
