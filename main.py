@@ -6,6 +6,18 @@ from datetime import date
 
 VALID_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+TEMP_MAIL_DOMAINS = [
+    "armyspy.com",
+    "cuvox.de",
+    "dayrep.com",
+    "einrot.com",
+    "fleckens.hu",
+    "gustr.com",
+    "jourrapide.com",
+    "superrito.com",
+    "teleworm.us",
+]
+
 names_df = pd.read_csv('namen.csv')
 FIRST_NAMES = names_df['voornaam'].tolist()
 LAST_NAMES  = names_df['achternaam'].tolist()
@@ -63,11 +75,21 @@ def random_postcode() -> str:
     return f"{random.randint(1000, 9999):04d} {''.join(random.choices(VALID_LETTERS, k=2))}"
 
 
+def generate_temp_mail(first: str, last: str) -> tuple[str, str, str]:
+    """Returns (username, domain, full_url)."""
+    username = f"{first.lower()}{last.lower()}{random.randint(100, 999)}"
+    domain   = random.choice(TEMP_MAIL_DOMAINS)
+    url      = f"https://www.fakemailgenerator.com/#/{domain}/{username}/"
+    return username, domain, url
+
+
 def generate_person() -> dict:
     first = random.choice(FIRST_NAMES)
     last  = random.choice(LAST_NAMES)
     idx   = random.randrange(len(PLACES))
     place, province = PLACES[idx], PROVINCES[idx]
+
+    username, domain, mail_url = generate_temp_mail(first, last)
 
     return {
         "voornaam":        first,
@@ -81,6 +103,8 @@ def generate_person() -> dict:
         "huisnummer":      str(random.randint(1, 200)),
         "plaatsnaam":      place,
         "provincie":       province,
+        "temp_mail":       f"{username}@{domain}",
+        "temp_mail_url":   mail_url,
     }
 
 
@@ -107,6 +131,11 @@ TEMPLATE = """\
     Huisnummer:      {huisnummer}
     Plaatsnaam:      {plaatsnaam}
     Provincie:       {provincie}
+
+|-----------------------------------------------|
+
+    Temp e-mail:     {temp_mail}
+    Mailbox URL:     {temp_mail_url}
 
 ================================================="""
 
