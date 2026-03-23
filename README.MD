@@ -46,22 +46,23 @@ python main.py
             Neppe Alias Generator
 |-----------------------------------------------|
 
-    Voornaam:        Martijn
-    Achternaam:      Van Dijk
-    Hele naam:       Martijn Van Dijk
-    Geboortedatum:   1-2-1988
+    Voornaam:        Sjoerd
+    Achternaam:      Lange
+    Hele naam:       Sjoerd Lange
+    Roepnaam:        Hugo
+    Geboortedatum:   19-11-1972
 
 |-----------------------------------------------|
 
-    Favoriete kleur: Groen
-    Oogkleur:        Blauw
+    Favoriete kleur: Wit
+    Oogkleur:        Hazel
 
 |-----------------------------------------------|
 
-    Postcode:        9798 PA
-    Huisnummer:      159
-    Plaatsnaam:      Garmerwolde
-    Provincie:       Groningen
+    Postcode:        1566 KN
+    Huisnummer:      167
+    Plaatsnaam:      Renesse
+    Provincie:       Zeeland
 
 =================================================
 ```
