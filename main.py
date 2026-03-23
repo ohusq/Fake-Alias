@@ -2,14 +2,16 @@ import pandas as pd
 import json
 import random
 import requests
+from datetime import date
 
 VALID_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-FRIENDS_NAMES = ["Ace", "Buddy", "Chief", "Duke", "Flash", "Ghost", "Hawk", "Ice"]
 
 names_df = pd.read_csv('namen.csv')
 FIRST_NAMES = names_df['voornaam'].tolist()
 LAST_NAMES  = names_df['achternaam'].tolist()
+
+friends_df = pd.read_csv('friend_names.csv')
+FRIENDS_NAMES = friends_df['roepnaam'].tolist()
 
 with open('places_provinces.csv', encoding='utf-8') as f:
     lines = f.readlines()
@@ -83,6 +85,7 @@ def generate_person() -> dict:
 
 
 TEMPLATE = """\
+
 =================================================
             Neppe Alias Generator
 |-----------------------------------------------|
