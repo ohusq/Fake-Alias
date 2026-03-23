@@ -2,7 +2,6 @@ import pandas as pd
 import json
 import random
 import requests
-from datetime import date
 
 VALID_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
