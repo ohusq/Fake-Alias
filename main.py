@@ -108,44 +108,69 @@ def generate_person() -> dict:
     }
 
 
-TEMPLATE = """\
+def build_output(p: dict) -> str:
+    label_w = 17  # width of "    Voornaam:        " prefix
 
-=================================================
-            Neppe Alias Generator
-|-----------------------------------------------|
+    rows = [
+        None,
+        ("Voornaam",        p["voornaam"]),
+        ("Achternaam",      p["achternaam"]),
+        ("Hele naam",       p["hele_naam"]),
+        ("Roepnaam",        p["roepnaam"]),
+        ("Geboortedatum",   p["geboortedatum"]),
+        None,
+        ("Favoriete kleur", p["favoriete_kleur"]),
+        ("Oogkleur",        p["oogkleur"]),
+        None,
+        ("Postcode",        p["postcode"]),
+        ("Huisnummer",      p["huisnummer"]),
+        ("Plaatsnaam",      p["plaatsnaam"]),
+        ("Provincie",       p["provincie"]),
+        None,
+        ("Temp e-mail",     p["temp_mail"]),
+        ("Mailbox URL",     p["temp_mail_url"]),
+    ]
 
-    Voornaam:        {voornaam}
-    Achternaam:      {achternaam}
-    Hele naam:       {hele_naam}
-    Roepnaam:        {roepnaam}
-    Geboortedatum:   {geboortedatum}
+    # Build content lines to measure max width
+    content_lines = []
+    for row in rows:
+        if row is None:
+            content_lines.append(None)  # separator placeholder
+        else:
+            label, value = row
+            content_lines.append(f"    {label + ':':<16} {value}")
 
-|-----------------------------------------------|
+    title = "Neppe Alias Generator"
+    inner_w = max(
+        len(title) + 4,
+        max(len(line) for line in content_lines if line is not None)
+    )
+    total_w = inner_w + 2  # +2 for the outer | |
 
-    Favoriete kleur: {favoriete_kleur}
-    Oogkleur:        {oogkleur}
+    top        = "=" * total_w
+    sep        = "|" + "-" * inner_w + "|"
+    title_line = "|" + title.center(inner_w) + "|"
 
-|-----------------------------------------------|
+    def content_line(text):
+        return "|" + text.ljust(inner_w) + "|"
 
-    Postcode:        {postcode}
-    Huisnummer:      {huisnummer}
-    Plaatsnaam:      {plaatsnaam}
-    Provincie:       {provincie}
+    lines = [top, title_line]
+    for item in content_lines:
+        if item is None:
+            lines.append(sep)
+        else:
+            lines.append(content_line(item))
+    lines.append(top)
 
-|-----------------------------------------------|
-
-    Temp e-mail:     {temp_mail}
-    Mailbox URL:     {temp_mail_url}
-
-================================================="""
+    return "\n".join(lines)
 
 
 def print_person(p: dict):
-    print(TEMPLATE.format(**p))
+    print(build_output(p))
 
 def save_txt(p: dict, path="results/alias.txt"):
     with open(path, 'w', encoding='utf-8') as f:
-        f.write(TEMPLATE.format(**p) + "\n")
+        f.write(build_output(p) + "\n")
 
 def save_json(p: dict, path="results/alias.json"):
     with open(path, 'w', encoding='utf-8') as f:
