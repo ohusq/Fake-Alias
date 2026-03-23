@@ -1,13 +1,15 @@
 import pandas as pd
-from random import randint
-from datetime import date
-import random
 import json
+import random
 import requests
 
 VALID_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+FRIENDS_NAMES = ["Ace", "Buddy", "Chief", "Duke", "Flash", "Ghost", "Hawk", "Ice"]
+
 names_df = pd.read_csv('namen.csv')
+FIRST_NAMES = names_df['voornaam'].tolist()
+LAST_NAMES  = names_df['achternaam'].tolist()
 
 with open('places_provinces.csv', encoding='utf-8') as f:
     lines = f.readlines()
@@ -22,160 +24,99 @@ for line in lines[1:]:
         rows.append([f"{parts[0]} ({parts[1]})", parts[2]])
 
 places_provinces_df = pd.DataFrame(rows, columns=header)
-
-FIRST_NAMES = names_df['voornaam'].to_list()
-LAST_NAMES = names_df['achternaam'].to_list()
-FIRST_NAMES_LENGTH = len(FIRST_NAMES)
-LAST_NAMES_LENGTH = len(LAST_NAMES)
-
-PLACES = places_provinces_df['plaatsnaam'].to_list()
-PROVINCES = places_provinces_df['provincie'].to_list()
-PLACES_LENGTH = len(PLACES)
+PLACES    = places_provinces_df['plaatsnaam'].tolist()
+PROVINCES = places_provinces_df['provincie'].tolist()
 
 
-def random_date(start_year=1900, end_year=None):
-    if end_year is None:
-        end_year = date.today().year
-
-    year  = randint(start_year, end_year)
-    month = randint(1, 12)
-
-    if month == 2:
-        day = randint(1, 29 if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0) else 28)
-    elif month in {4, 6, 9, 11}:
-        day = randint(1, 30)
+def random_date(start=1960, end=2000):
+    y = random.randint(start, end)
+    m = random.randint(1, 12)
+    if m == 2:
+        d = random.randint(1, 29 if (y % 4 == 0 and y % 100 != 0) or y % 400 == 0 else 28)
+    elif m in {4, 6, 9, 11}:
+        d = random.randint(1, 30)
     else:
-        day = randint(1, 31)
+        d = random.randint(1, 31)
+    return f"{d}-{m}-{y}"
 
-    return f"{day}-{month}-{year}"
 
-
-def lookup_postcode_for_city(city: str) -> str | None:
+def lookup_postcode(city: str) -> str | None:
     try:
-        url = "https://gratis-postcodedata.nl/api/suggest"
-        response = requests.get(url, params={"q": city, "country": "nl", "limit": 10}, timeout=5)
-        response.raise_for_status()
-        data = response.json()
-
-        results = [
-            r for r in data.get("results", [])
-            if r.get("plaats", "").lower() == city.lower()
-        ]
-
-        if not results:
-            results = data.get("results", [])
-
-        if results:
-            chosen = random.choice(results)
-            raw = chosen["postcode"]
+        r = requests.get(
+            "https://gratis-postcodedata.nl/api/suggest",
+            params={"q": city, "country": "nl", "limit": 10}, timeout=5
+        )
+        r.raise_for_status()
+        results = r.json().get("results", [])
+        matches = [x for x in results if x.get("plaats", "").lower() == city.lower()] or results
+        if matches:
+            raw = random.choice(matches)["postcode"]
             return f"{raw[:4]} {raw[4:]}"
-
     except Exception:
         pass
-
     return None
 
 
-def random_nl_postcode_fallback() -> str:
-    """Fallback: fully random NL postcode when API is unavailable."""
-    number = random.randint(1000, 9999)
-    letters = ''.join(random.choice(VALID_LETTERS) for _ in range(2))
-    return f"{number:04d} {letters}"
-
-
-def date_of_birth_gen():
-    return random_date(1960, 2000)
-
-
-def random_color(choices: list):
-    return choices[randint(0, len(choices) - 1)]
-
-
-def random_place_province():
-    index = randint(0, PLACES_LENGTH - 1)
-    return PLACES[index], PROVINCES[index]
+def random_postcode() -> str:
+    return f"{random.randint(1000, 9999):04d} {''.join(random.choices(VALID_LETTERS, k=2))}"
 
 
 def generate_person() -> dict:
-    first_name = FIRST_NAMES[randint(0, FIRST_NAMES_LENGTH - 1)]
-    last_name  = LAST_NAMES[randint(0, LAST_NAMES_LENGTH - 1)]
-    name       = f"{first_name} {last_name}"
-    dob        = date_of_birth_gen()
-    place, province = random_place_province()
-
-    zip_code = lookup_postcode_for_city(place) or random_nl_postcode_fallback()
-
-    house_number = str(randint(1, 200))
-
-    eye_color = random_color(['Blauw', 'Bruin', 'Groen', 'Hazel'])
-    fav_color = random_color([
-        'Blauw', 'Rood', 'Geel', 'Groen',
-        'Wit', 'Zwart', 'Grijs', 'Oranje'
-    ])
+    first = random.choice(FIRST_NAMES)
+    last  = random.choice(LAST_NAMES)
+    idx   = random.randrange(len(PLACES))
+    place, province = PLACES[idx], PROVINCES[idx]
 
     return {
-        "voornaam":        first_name,
-        "achternaam":      last_name,
-        "hele_naam":       name,
-        "geboortedatum":   dob,
-        "favoriete_kleur": fav_color,
-        "oogkleur":        eye_color,
-        "postcode":        zip_code,
-        "huisnummer":      house_number,
+        "voornaam":        first,
+        "achternaam":      last,
+        "hele_naam":       f"{first} {last}",
+        "roepnaam":        random.choice(FRIENDS_NAMES),
+        "geboortedatum":   random_date(),
+        "favoriete_kleur": random.choice(['Blauw', 'Rood', 'Geel', 'Groen', 'Wit', 'Zwart', 'Grijs', 'Oranje']),
+        "oogkleur":        random.choice(['Blauw', 'Bruin', 'Groen', 'Hazel']),
+        "postcode":        lookup_postcode(place) or random_postcode(),
+        "huisnummer":      str(random.randint(1, 200)),
         "plaatsnaam":      place,
         "provincie":       province,
     }
 
 
-def print_person(p: dict):
-    print(f"""
+TEMPLATE = """\
 =================================================
             Neppe Alias Generator
 |-----------------------------------------------|
 
-    Voornaam:        {p['voornaam']}
-    Achternaam:      {p['achternaam']}
-    Hele naam:       {p['hele_naam']}
-    Geboortedatum:   {p['geboortedatum']}
+    Voornaam:        {voornaam}
+    Achternaam:      {achternaam}
+    Hele naam:       {hele_naam}
+    Roepnaam:        {roepnaam}
+    Geboortedatum:   {geboortedatum}
 
 |-----------------------------------------------|
 
-    Favoriete kleur: {p['favoriete_kleur']}
-    Oogkleur:        {p['oogkleur']}
+    Favoriete kleur: {favoriete_kleur}
+    Oogkleur:        {oogkleur}
 
 |-----------------------------------------------|
 
-    Postcode:        {p['postcode']}
-    Huisnummer:      {p['huisnummer']}
-    Plaatsnaam:      {p['plaatsnaam']}
-    Provincie:       {p['provincie']}
+    Postcode:        {postcode}
+    Huisnummer:      {huisnummer}
+    Plaatsnaam:      {plaatsnaam}
+    Provincie:       {provincie}
 
-=================================================
-    """)
-
-
-def save_txt(p: dict, filename: str = "results/alias.txt"):
-    with open(filename, 'w', encoding='utf-8') as f:
-        f.write("=================================================\n")
-        f.write("            Neppe Alias Generator\n")
-        f.write("|-----------------------------------------------|\n\n")
-        f.write(f"    Voornaam:        {p['voornaam']}\n")
-        f.write(f"    Achternaam:      {p['achternaam']}\n")
-        f.write(f"    Hele naam:       {p['hele_naam']}\n")
-        f.write(f"    Geboortedatum:   {p['geboortedatum']}\n\n")
-        f.write("|-----------------------------------------------|\n\n")
-        f.write(f"    Favoriete kleur: {p['favoriete_kleur']}\n")
-        f.write(f"    Oogkleur:        {p['oogkleur']}\n\n")
-        f.write("|-----------------------------------------------|\n\n")
-        f.write(f"    Postcode:        {p['postcode']}\n")
-        f.write(f"    Huisnummer:      {p['huisnummer']}\n")
-        f.write(f"    Plaatsnaam:      {p['plaatsnaam']}\n")
-        f.write(f"    Provincie:       {p['provincie']}\n\n")
-        f.write("=================================================\n")
+================================================="""
 
 
-def save_json(p: dict, filename: str = "results/alias.json"):
-    with open(filename, 'w', encoding='utf-8') as f:
+def print_person(p: dict):
+    print(TEMPLATE.format(**p))
+
+def save_txt(p: dict, path="results/alias.txt"):
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(TEMPLATE.format(**p) + "\n")
+
+def save_json(p: dict, path="results/alias.json"):
+    with open(path, 'w', encoding='utf-8') as f:
         json.dump(p, f, ensure_ascii=False, indent=4)
 
 
@@ -184,6 +125,5 @@ def main():
     print_person(person)
     save_txt(person)
     save_json(person)
-
 
 main()
