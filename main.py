@@ -76,7 +76,6 @@ def random_postcode() -> str:
 
 
 def generate_temp_mail(first: str, last: str) -> tuple[str, str, str]:
-    """Returns (username, domain, full_url)."""
     username = f"{first.lower()}{last.lower()}{random.randint(100, 999)}"
     domain   = random.choice(TEMP_MAIL_DOMAINS)
     url      = f"https://www.fakemailgenerator.com/#/{domain}/{username}/"
@@ -109,8 +108,6 @@ def generate_person() -> dict:
 
 
 def build_output(p: dict) -> str:
-    label_w = 17  # width of "    Voornaam:        " prefix
-
     rows = [
         None,
         ("Voornaam",        p["voornaam"]),
@@ -131,7 +128,6 @@ def build_output(p: dict) -> str:
         ("Mailbox URL",     p["temp_mail_url"]),
     ]
 
-    # Build content lines to measure max width
     content_lines = []
     for row in rows:
         if row is None:
