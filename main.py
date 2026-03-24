@@ -75,7 +75,7 @@ def random_postcode() -> str:
 
 
 def generate_temp_mail(first: str, last: str) -> tuple[str, str, str]:
-    username = f"{first.lower()}{last.lower()}{random.randint(100, 999)}"
+    username = f"{first.lower()}{last.lower()}{random.randint(100, 999)}".replace(' ', '')
     domain   = random.choice(TEMP_MAIL_DOMAINS)
     url      = f"https://www.fakemailgenerator.com/#/{domain}/{username}/"
     return username, domain, url
@@ -178,4 +178,5 @@ def main():
     save_txt(person)
     save_json(person)
 
-main()
+if __name__ == "__main__":
+    main()

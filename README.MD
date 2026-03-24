@@ -26,7 +26,7 @@ De uitvoer wordt getoond in de terminal en opgeslagen als `alias.txt` en `alias.
 Installeer de dependencies met:
 
 ```bash
-pip install pandas
+pip install pandas requests
 ```
 
 ---
@@ -42,29 +42,26 @@ python main.py
 ### Voorbeelduitvoer
 
 ```
-=================================================
-            Neppe Alias Generator
-|-----------------------------------------------|
-
-    Voornaam:        Sjoerd
-    Achternaam:      Lange
-    Hele naam:       Sjoerd Lange
-    Roepnaam:        Hugo
-    Geboortedatum:   19-11-1972
-
-|-----------------------------------------------|
-
-    Favoriete kleur: Wit
-    Oogkleur:        Hazel
-
-|-----------------------------------------------|
-
-    Postcode:        1566 KN
-    Huisnummer:      167
-    Plaatsnaam:      Renesse
-    Provincie:       Zeeland
-
-=================================================
+===========================================================================================
+|                                  Neppe Alias Generator                                  |
+|-----------------------------------------------------------------------------------------|
+|    Voornaam:        Willemijn                                                           |
+|    Achternaam:      De Bruin                                                            |
+|    Hele naam:       Willemijn De Bruin                                                  |
+|    Roepnaam:        Yvette                                                              |
+|    Geboortedatum:   6-10-1961                                                           |
+|-----------------------------------------------------------------------------------------|
+|    Favoriete kleur: Rood                                                                |
+|    Oogkleur:        Hazel                                                               |
+|-----------------------------------------------------------------------------------------|
+|    Postcode:        6845 HV                                                             |
+|    Huisnummer:      100                                                                 |
+|    Plaatsnaam:      Cadier en Keer                                                      |
+|    Provincie:       Limburg                                                             |
+|-----------------------------------------------------------------------------------------|
+|    Temp e-mail:     willemijndebruin781@fleckens.hu                                     |
+|    Mailbox URL:     https://www.fakemailgenerator.com/#/fleckens.hu/willemijndebruin781/|
+===========================================================================================
 ```
 
 ---
@@ -85,6 +82,7 @@ Fake Alias/
 ├── main.py
 ├── namen.csv
 ├── places_provinces.csv
+├── friend_names.csv
 ├── results/
 ├──── alias.txt        # gegenereerd
 └──── alias.json       # gegenereerd
