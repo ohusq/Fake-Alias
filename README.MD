@@ -1,4 +1,7 @@
 # Fake Alias Generator
+[![Python application](https://github.com/ohusq/Fake-Alias/actions/workflows/python-app.yml/badge.svg)](https://github.com/ohusq/Fake-Alias/actions/workflows/python-app.yml)
+
+---
 
 Een Python script dat willekeurige Nederlandse nep identiteiten genereert op basis van echte voor en achternamen, plaatsnamen en provincies.
 
