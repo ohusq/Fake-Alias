@@ -20,7 +20,7 @@ De uitvoer wordt getoond in de terminal en opgeslagen als `alias.txt` en `alias.
 
 ## Vereisten
 
-- Python 3.8+
+- Python 3.14+
 - pandas
 
 Installeer de dependencies met:
