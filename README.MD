@@ -26,7 +26,7 @@ De uitvoer wordt getoond in de terminal en opgeslagen als `alias.txt` en `alias.
 Installeer de dependencies met:
 
 ```bash
-pip install pandas requests
+python -m pip install -r requirements.txt
 ```
 
 ---
